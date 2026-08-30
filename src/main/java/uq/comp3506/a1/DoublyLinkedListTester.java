@@ -62,9 +62,11 @@ public class DoublyLinkedListTester<T> {
             return true;
         }
 
-        T element2 = oracle.nextT();
-        reference.add(element2);
-        testList.append(element2);
+        for (int j = 0; j < 2500; j++) {
+            T element2 = oracle.nextT();
+            reference.add(element2);
+            testList.append(element2);
+        }
 
         if (testList.isEmpty() ||  testList.size() != reference.size()) {
             return true;
@@ -89,7 +91,37 @@ public class DoublyLinkedListTester<T> {
      * @return {@code true} if a bug is detected; {@code false} otherwise
      */
     public boolean hasBugsPrepend(ListInterface<T> testList) {
-        return true;
+        if (!testList.isEmpty() ||  testList.size() != 0) {
+            return true;
+        }
+
+        LinkedList<T> reference = new LinkedList<>();
+        T element = oracle.nextT();
+        reference.addFirst(element);
+        testList.prepend(element);
+
+        if (testList.isEmpty() || testList.size() != 1) {
+            return true;
+        }
+
+        for (int j = 0; j < 2500; j++) {
+            T element2 = oracle.nextT();
+            reference.addFirst(element2);
+            testList.prepend(element2);
+        }
+
+        if (testList.isEmpty() ||  testList.size() != reference.size()) {
+            return true;
+        }
+
+        for (int i = 0; i < reference.size(); i++) {
+            T fromReference = reference.get(i);
+            T fromTestList = testList.get(i);
+            if (!fromTestList.equals(fromReference)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
