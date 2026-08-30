@@ -196,7 +196,12 @@ public class DoublyLinkedListTester<T> {
 
             for (int j = 0; j < reference.size(); j++) {
                 T fromReference = reference.get(j);
-                T fromTestList = testList.get(j);
+                T fromTestList;
+                try {
+                    fromTestList = testList.get(j);
+                } catch (Exception e) {
+                    return true;
+                }
                 if (!fromTestList.equals(fromReference)) {
                     return true;
                 }
@@ -214,7 +219,80 @@ public class DoublyLinkedListTester<T> {
      * @return {@code true} if a bug is detected; {@code false} otherwise
      */
     public boolean hasBugsAppendGetSet(ListInterface<T> testList) {
-        return true;
+        try {
+            testList.get(-1);
+            return true;
+        } catch (IndexOutOfBoundsException e) {
+            if (!testList.isEmpty() ||  testList.size() != 0) {
+                return true;
+            }
+        } catch (Exception e) {
+            return true;
+        }
+
+        try {
+            testList.set(-1, oracle.nextT());
+            return true;
+        } catch (IndexOutOfBoundsException e) {
+            // correct
+        } catch (Exception e) {
+            return true;
+        }
+
+        LinkedList<T> reference = new LinkedList<>();
+
+        for (int i = 0; i < 2500; i++) {
+            T element = oracle.nextT();;
+            reference.add(element);
+            testList.append(element);
+
+            try {
+                testList.get(reference.size());
+                return true;
+            } catch (IndexOutOfBoundsException e) {
+                // correct
+            } catch (Exception e) {
+                return true;
+            }
+            try {
+                testList.set(reference.size(), oracle.nextT());
+                return true;
+            } catch (IndexOutOfBoundsException e) {
+                // correct
+            } catch (Exception e) {
+                return true;
+            }
+
+            int idx = random.nextInt(reference.size());
+            T fromTestList;
+            try {
+                fromTestList = testList.get(idx);
+                if (!fromTestList.equals(reference.get(idx))) {
+                    return true;
+                }
+            } catch (Exception e) {
+                return true;
+            }
+
+            T setElement;
+            try {
+                setElement = oracle.nextT();
+                if (!testList.set(idx,setElement).equals(fromTestList)) {
+                    return true;
+                }
+            } catch (Exception e) {
+                return true;
+            }
+            reference.set(idx,setElement);
+            if (!testList.get(idx).equals(setElement)) {
+                return true;
+            }
+
+            if (testList.isEmpty() || testList.size() != reference.size()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
