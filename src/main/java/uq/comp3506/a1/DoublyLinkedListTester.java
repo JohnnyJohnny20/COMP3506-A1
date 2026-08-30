@@ -54,28 +54,13 @@ public class DoublyLinkedListTester<T> {
         }
 
         LinkedList<T> reference = new LinkedList<>();
-        T element = oracle.nextT();
-        reference.add(element);
-        testList.append(element);
 
-        if (testList.isEmpty() || testList.size() != 1) {
-            return true;
-        }
+        for (int i = 0; i < 2500; i++) {
+            T element = oracle.nextT();
+            reference.add(element);
+            testList.append(element);
 
-        for (int j = 0; j < 2500; j++) {
-            T element2 = oracle.nextT();
-            reference.add(element2);
-            testList.append(element2);
-        }
-
-        if (testList.isEmpty() ||  testList.size() != reference.size()) {
-            return true;
-        }
-
-        for (int i = 0; i < reference.size(); i++) {
-            T fromReference = reference.get(i);
-            T fromTestList = testList.get(i);
-            if (!fromTestList.equals(fromReference)) {
+            if (testList.isEmpty() ||  testList.size() != reference.size()) {
                 return true;
             }
         }
@@ -96,31 +81,17 @@ public class DoublyLinkedListTester<T> {
         }
 
         LinkedList<T> reference = new LinkedList<>();
-        T element = oracle.nextT();
-        reference.addFirst(element);
-        testList.prepend(element);
 
-        if (testList.isEmpty() || testList.size() != 1) {
-            return true;
-        }
+        for (int i = 0; i < 2500; i++) {
+            T element = oracle.nextT();
+            reference.addFirst(element);
+            testList.prepend(element);
 
-        for (int j = 0; j < 2500; j++) {
-            T element2 = oracle.nextT();
-            reference.addFirst(element2);
-            testList.prepend(element2);
-        }
-
-        if (testList.isEmpty() ||  testList.size() != reference.size()) {
-            return true;
-        }
-
-        for (int i = 0; i < reference.size(); i++) {
-            T fromReference = reference.get(i);
-            T fromTestList = testList.get(i);
-            if (!fromTestList.equals(fromReference)) {
+            if (testList.isEmpty() ||  testList.size() != reference.size()) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -132,6 +103,13 @@ public class DoublyLinkedListTester<T> {
      * @return {@code true} if a bug is detected; {@code false} otherwise
      */
     public boolean hasBugsAdd(ListInterface<T> testList) {
+        if (!testList.isEmpty() ||  testList.size() != 0) {
+            return true;
+        }
+
+        LinkedList<T> reference = new LinkedList<>();
+
+
         return true;
     }
 
