@@ -119,7 +119,7 @@ public class DoublyLinkedListTester<T> {
 
         for (int i = 0; i < 2500; i++) {
             T element = oracle.nextT();
-            int idx = random.nextInt();
+            int idx = random.nextInt(reference.size() + 1);
             reference.add(idx, element);
             testList.add(idx, element);
 
@@ -140,7 +140,69 @@ public class DoublyLinkedListTester<T> {
      * @return {@code true} if a bug is detected; {@code false} otherwise
      */
     public boolean hasBugsAppendPrependAddGet(ListInterface<T> testList) {
-        return true;
+
+        try {
+            testList.add(-1, oracle.nextT());
+            return true;
+        } catch (IndexOutOfBoundsException e) {
+            if (!testList.isEmpty() ||  testList.size() != 0) {
+                return true;
+            }
+        } catch (Exception e) {
+            return true;
+        }
+
+        try {
+            testList.get(-1);
+            return true;
+        } catch (IndexOutOfBoundsException e) {
+            // correct
+        } catch (Exception e) {
+            return true;
+        }
+
+        LinkedList<T> reference = new LinkedList<>();
+
+        for (int i = 0; i < 6500; i++) {
+            T element = oracle.nextT();
+            int operation = random.nextInt(3);
+            switch (operation) {
+                case 0:
+                    reference.add(element);
+                    testList.append(element);
+                    break;
+                case 1:
+                    reference.addFirst(element);
+                    testList.prepend(element);
+                    break;
+                case 2:
+                    int idx = random.nextInt(reference.size() + 1);
+                    reference.add(idx, element);
+                    testList.add(idx, element);
+                    break;
+            }
+            if (testList.isEmpty() ||  testList.size() != reference.size()) {
+                return true;
+            }
+
+            try {
+                testList.get(reference.size());
+                return true;
+            } catch (IndexOutOfBoundsException e) {
+                // correct
+            } catch (Exception e) {
+                return true;
+            }
+
+            for (int j = 0; j < reference.size(); j++) {
+                T fromReference = reference.get(j);
+                T fromTestList = testList.get(j);
+                if (!fromTestList.equals(fromReference)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
