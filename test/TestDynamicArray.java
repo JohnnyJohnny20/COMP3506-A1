@@ -4,6 +4,7 @@
 
 import uq.comp3506.a1.structures.DynamicArray;
 
+
 public class TestDynamicArray {
 
     public static void main(String[] args) {

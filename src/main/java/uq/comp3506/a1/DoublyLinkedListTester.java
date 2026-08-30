@@ -8,6 +8,7 @@ import uq.comp3506.a1.structures.ListInterface;
 import uq.comp3506.a1.structures.Oracle;
 
 // You ARE allowed to import the Java linked list to help with your testing
+import java.util.LinkedList;
 
 /**
  * A tester for detecting incorrect behaviour in implementations of
@@ -48,7 +49,36 @@ public class DoublyLinkedListTester<T> {
      * @return {@code true} if a bug is detected; {@code false} otherwise
      */
     public boolean hasBugsAppend(ListInterface<T> testList) {
-        return true;
+        if (!testList.isEmpty() ||  testList.size() != 0) {
+            return true;
+        }
+
+        LinkedList<T> reference = new LinkedList<>();
+        T element = oracle.nextT();
+        reference.add(element);
+        testList.append(element);
+
+        if (testList.isEmpty() || testList.size() != 1) {
+            return true;
+        }
+
+        T element2 = oracle.nextT();
+        reference.add(element2);
+        testList.append(element2);
+
+        if (testList.isEmpty() ||  testList.size() != reference.size()) {
+            return true;
+        }
+
+        for (int i = 0; i < reference.size(); i++) {
+            T fromReference = reference.get(i);
+            T fromTestList = testList.get(i);
+            if (!fromTestList.equals(fromReference)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
