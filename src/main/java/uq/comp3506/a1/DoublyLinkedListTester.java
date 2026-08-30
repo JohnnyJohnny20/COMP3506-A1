@@ -103,14 +103,31 @@ public class DoublyLinkedListTester<T> {
      * @return {@code true} if a bug is detected; {@code false} otherwise
      */
     public boolean hasBugsAdd(ListInterface<T> testList) {
-        if (!testList.isEmpty() ||  testList.size() != 0) {
+
+        try {
+            testList.add(-1, oracle.nextT());
+            return true;
+        } catch (IndexOutOfBoundsException e) {
+            if (!testList.isEmpty() ||  testList.size() != 0) {
+                return true;
+            }
+        } catch (Exception e) {
             return true;
         }
 
         LinkedList<T> reference = new LinkedList<>();
 
+        for (int i = 0; i < 2500; i++) {
+            T element = oracle.nextT();
+            int idx = random.nextInt();
+            reference.add(idx, element);
+            testList.add(idx, element);
 
-        return true;
+            if (testList.isEmpty() ||  testList.size() != reference.size()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
