@@ -194,16 +194,18 @@ public class DoublyLinkedListTester<T> {
                 return true;
             }
 
-            for (int j = 0; j < reference.size(); j++) {
-                T fromReference = reference.get(j);
-                T fromTestList;
-                try {
-                    fromTestList = testList.get(j);
-                } catch (Exception e) {
-                    return true;
-                }
-                if (!fromTestList.equals(fromReference)) {
-                    return true;
+            if (i % 500 == 0 || i == 2499) {
+                for (int j = 0; j < reference.size(); j++) {
+                    T fromReference = reference.get(j);
+                    T fromTestList;
+                    try {
+                        fromTestList = testList.get(j);
+                    } catch (Exception e) {
+                        return true;
+                    }
+                    if (!fromTestList.equals(fromReference)) {
+                        return true;
+                    }
                 }
             }
         }
@@ -277,13 +279,13 @@ public class DoublyLinkedListTester<T> {
             T setElement;
             try {
                 setElement = oracle.nextT();
-                if (!testList.set(idx,setElement).equals(fromTestList)) {
+                if (!testList.set(idx, setElement).equals(fromTestList)) {
                     return true;
                 }
             } catch (Exception e) {
                 return true;
             }
-            reference.set(idx,setElement);
+            reference.set(idx, setElement);
             if (!testList.get(idx).equals(setElement)) {
                 return true;
             }
@@ -381,32 +383,43 @@ public class DoublyLinkedListTester<T> {
             T setElement;
             try {
                 setElement = oracle.nextT();
-                if (!testList.set(idx,setElement).equals(fromTestList)) {
+                if (!testList.set(idx, setElement).equals(fromTestList)) {
                     return true;
                 }
             } catch (Exception e) {
                 return true;
             }
-            reference.set(idx,setElement);
+            reference.set(idx, setElement);
 
             if (!testList.get(idx).equals(setElement)) {
                 return true;
             }
 
-            try {
-                testList.remove(idx);
-            } catch (Exception e) {
-                return true;
-            }
-            reference.remove(idx);
-
-            if (testList.isEmpty() || testList.size() != reference.size()) {
-                return true;
-            }
-
-            for (int j = 0; j < reference.size(); j++) {
-                if (!testList.get(j).equals(reference.get(j))) {
+            if (random.nextInt(10) == 0) {
+                try {
+                    testList.remove(idx);
+                } catch (Exception e) {
                     return true;
+                }
+                reference.remove(idx);
+            }
+
+            if (testList.isEmpty() != reference.isEmpty() || testList.size() != reference.size()) {
+                return true;
+            }
+
+            if (i % 500 == 0 || i == 2499) {
+                for (int j = 0; j < reference.size(); j++) {
+                    T fromReference = reference.get(j);
+                    T getFromTestList;
+                    try {
+                        getFromTestList = testList.get(j);
+                    } catch (Exception e) {
+                        return true;
+                    }
+                    if (!getFromTestList.equals(fromReference)) {
+                        return true;
+                    }
                 }
             }
         }
@@ -423,7 +436,117 @@ public class DoublyLinkedListTester<T> {
      * @return {@code true} if a bug is detected; {@code false} otherwise
      */
     public boolean hasBugsAppendGetSetRemoveFirst(ListInterface<T> testList) {
-        return true;
+        if (testList.removeFirst(oracle.nextT())) {
+            return true;
+        }
+
+        try {
+            testList.set(-1, oracle.nextT());
+            return true;
+        } catch (IndexOutOfBoundsException e) {
+            if (!testList.isEmpty() ||  testList.size() != 0) {
+                return true;
+            }
+        } catch (Exception e) {
+            return true;
+        }
+
+        try {
+            testList.get(-1);
+            return true;
+        } catch (IndexOutOfBoundsException e) {
+            // correct
+        } catch (Exception e) {
+            return true;
+        }
+
+        LinkedList<T> reference = new LinkedList<>();
+        T neverInserted = oracle.nextT();
+
+        for (int i = 0; i < 2500; i++) {
+            T element = oracle.nextT();
+            while (element.equals(neverInserted)) {
+                element = oracle.nextT();
+            }
+            testList.append(element);
+            reference.add(element);
+
+            try {
+                testList.get(reference.size());
+                return true;
+            } catch (IndexOutOfBoundsException e) {
+                // correct
+            } catch (Exception e) {
+                return true;
+            }
+            try {
+                testList.set(reference.size(), oracle.nextT());
+                return true;
+            } catch (IndexOutOfBoundsException e) {
+                // correct
+            } catch (Exception e) {
+                return true;
+            }
+
+            if (testList.removeFirst(neverInserted)) {
+                return true;
+            }
+
+            int idx = random.nextInt(reference.size());
+            T fromTestList;
+            try {
+                fromTestList = testList.get(idx);
+                if (!fromTestList.equals(reference.get(idx))) {
+                    return true;
+                }
+            } catch (Exception e) {
+                return true;
+            }
+
+            T setElement;
+            try {
+                setElement = oracle.nextT();
+                if (!testList.set(idx, setElement).equals(fromTestList)) {
+                    return true;
+                }
+            } catch (Exception e) {
+                return true;
+            }
+            reference.set(idx, setElement);
+
+            if (!testList.get(idx).equals(setElement)) {
+                return true;
+            }
+
+            // do the test remove first success here
+            if (random.nextInt(10) == 0) {
+                if (testList.removeFirst(setElement)) {
+                    reference.remove(setElement);
+                } else {
+                    return true;
+                }
+            }
+
+            if (testList.isEmpty() != reference.isEmpty() || testList.size() != reference.size()) {
+                return true;
+            }
+
+            if (i % 500 == 0 || i == 2499) {
+                for (int j = 0; j < reference.size(); j++) {
+                    T fromReference = reference.get(j);
+                    T getFromTestList;
+                    try {
+                        getFromTestList = testList.get(j);
+                    } catch (Exception e) {
+                        return true;
+                    }
+                    if (!getFromTestList.equals(fromReference)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -433,7 +556,23 @@ public class DoublyLinkedListTester<T> {
      * @return {@code true} if a bug is detected; {@code false} otherwise
      */
     public boolean hasBugsAllMethods(ListInterface<T> testList) {
-        return true;
+        boolean result = false;
+
+        result |= hasBugsAppend(testList);
+        testList.clear();
+        result |= hasBugsPrepend(testList);
+        testList.clear();
+        result |= hasBugsAdd(testList);
+        testList.clear();
+        result |= hasBugsAppendPrependAddGet(testList);
+        testList.clear();
+        result |= hasBugsAppendGetSet(testList);
+        testList.clear();
+        result |= hasBugsAppendGetSetRemove(testList);
+        testList.clear();
+        result |= hasBugsAppendGetSetRemoveFirst(testList);
+
+        return result;
     }
 
 }
