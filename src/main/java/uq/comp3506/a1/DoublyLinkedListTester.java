@@ -317,7 +317,6 @@ public class DoublyLinkedListTester<T> {
         } catch (Exception e) {
             return true;
         }
-
         try {
             testList.set(-1, oracle.nextT());
             return true;
@@ -326,7 +325,6 @@ public class DoublyLinkedListTester<T> {
         } catch (Exception e) {
             return true;
         }
-
         try {
             testList.get(-1);
             return true;
@@ -337,7 +335,6 @@ public class DoublyLinkedListTester<T> {
         }
 
         LinkedList<T> reference = new LinkedList<>();
-
         for (int i = 0; i < 2500; i++) {
             T element = oracle.nextT();
             testList.append(element);
@@ -407,7 +404,6 @@ public class DoublyLinkedListTester<T> {
             if (testList.isEmpty() != reference.isEmpty() || testList.size() != reference.size()) {
                 return true;
             }
-
             if (i % 500 == 0 || i == 2499) {
                 for (int j = 0; j < reference.size(); j++) {
                     T fromReference = reference.get(j);

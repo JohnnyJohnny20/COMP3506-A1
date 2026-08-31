@@ -26,7 +26,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
     /**
      * data stores the raw objects
      */
-    private T[] data;
+    private Object[] data;
 
     /**
      * Constructs an empty Dynamic Array
@@ -34,19 +34,20 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
     public DynamicArray() {
         // XXX todo
         // Confused about how to resize? Check the Ed lessons...
+        this.capacity = 32;
+        this.size = 0;
+        this.data = new Object[this.capacity];
     }
 
     // See ListInterface
     @Override
     public int size() {
-        return -1;
+        return this.size;
     }
 
     // See ListInterface
     @Override
-    public boolean isEmpty() {
-        return false;
-    }
+    public boolean isEmpty() { return this.size() == 0; }
 
     /**
      * Has the size reached the current capacity?
@@ -55,7 +56,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      * testing it explicitly.
      */
     public boolean isFull() {
-        return false;
+        return this.size == this.capacity;
     }
 
     /**
@@ -64,7 +65,16 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      * be testing it explicitly.
      */
     public int getCapacity() {
-        return -1;
+        return this.capacity;
+    }
+
+    private void ensureCapacity() {
+        if (this.capacity == this.size) {
+            this.capacity *= 2;
+            Object[] newArray = new Object[this.capacity];
+            if (this.size >= 0) System.arraycopy(this.data, 0, newArray, 0, this.size);
+            this.data = newArray;
+        }
     }
 
     /**
@@ -76,8 +86,16 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public boolean append(T element) {
+        ensureCapacity();
+        this.data[this.size++] = element;
+        return true;
+    }
 
-        return false;
+
+    private void downShift(int idx) {
+        for (int i = this.size; i > idx; i--) {
+            this.data[i] = this.data[i - 1];
+        }
     }
 
     /**
@@ -88,8 +106,15 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public boolean prepend(T element) {
+        ensureCapacity();
+        downShift(0);
+        this.data[0] = element;
+        this.size++;
+        return true;
+    }
 
-        return false;
+    private boolean notInExistingBounds(int ix) {
+        return ix < 0 || ix > this.size - 1;
     }
 
     /**
@@ -104,8 +129,21 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public boolean add(int ix, T element) {
+        ensureCapacity();
+        if (ix < 0 || ix > this.size) {
+            throw new IndexOutOfBoundsException();
+        }
 
-        return false;
+        if (ix == 0) {
+            this.prepend(element);
+        } else if (ix == this.size) {
+            this.append(element);
+        } else {
+            downShift(ix);
+            this.data[ix] = element;
+            this.size++;
+        }
+        return true;
     }
 
     /**
@@ -115,8 +153,10 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public T get(int ix) {
-
-        return null;
+        if (notInExistingBounds(ix)) {
+            throw new IndexOutOfBoundsException();
+        }
+        return (T) this.data[ix];
     }
 
     /**
@@ -126,8 +166,18 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public T set(int ix, T element) {
+        if (notInExistingBounds(ix)) {
+            throw new IndexOutOfBoundsException();
+        }
+        T existingElem = this.get(ix);
+        this.data[ix] = element;
+        return existingElem;
+    }
 
-        return null;
+    private void upShift(int idx) {
+        for (int i = idx; i < this.size; i++) {
+            this.data[i] = this.data[i + 1];
+        }
     }
 
     /**
@@ -137,8 +187,14 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public T remove(int ix) {
-
-        return null;
+        if (notInExistingBounds(ix)) {
+            throw new IndexOutOfBoundsException();
+        }
+        T removedElem = this.get(ix);
+        this.data[ix] = null;
+        upShift(ix);
+        this.size--;
+        return removedElem;
     }
 
     /**
@@ -149,13 +205,28 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public boolean removeFirst(T t) {
-
-        return false;
+        int idx = -1;
+        for (int i = 0; i < this.size; i++) {
+            if (this.data[i].equals(t)) {
+                this.data[i] = null;
+                idx = i;
+                break;
+            }
+        }
+        if (idx == -1) {
+            return false;
+        }
+        upShift(idx);
+        this.size--;
+        return true;
     }
 
     @Override
     public void clear() {
-
+        for (int i = 0; i < this.size; i++) {
+            this.data[i] = null;
+        }
+        this.size = 0;
     }
 
     /**
