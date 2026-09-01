@@ -96,9 +96,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
 
 
     private void downShift(int idx) {
-        for (int i = this.size; i > idx; i--) {
-            this.data[i] = this.data[i - 1];
-        }
+        System.arraycopy(this.data, idx, this.data, idx + 1, this.size - idx);
     }
 
     /**
@@ -178,9 +176,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
     }
 
     private void upShift(int idx) {
-        for (int i = idx; i < this.size - 1; i++) {
-            this.data[i] = this.data[i + 1];
-        }
+        System.arraycopy(this.data, idx + 1, this.data, idx, this.size - idx - 1);
     }
 
     /**
