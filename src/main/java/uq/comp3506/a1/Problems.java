@@ -24,7 +24,33 @@ public class Problems {
      * </ul>
      */
     public static long sumOddNumbers(long[] numbers) {
-        return -1;
+        long max = numbers[0];
+        long min = numbers[0];
+        long sumOfExistingOdds = 0;
+        for (long number : numbers) {
+            if (number > max) {
+                max = number;
+            }
+            if (number < min) {
+                min = number;
+            }
+            if (number % 2 != 0) {
+                sumOfExistingOdds += number;
+            }
+
+        }
+
+        long firstOdd = min;
+        long lastOdd = max;
+        if (firstOdd % 2 == 0) {
+            firstOdd++;
+        }
+        if (lastOdd % 2 == 0) {
+            lastOdd--;
+        }
+
+        long n = ((lastOdd-firstOdd)/2 + 1);
+        return n * (firstOdd + lastOdd)/2 - sumOfExistingOdds;
     }
 
     /**
