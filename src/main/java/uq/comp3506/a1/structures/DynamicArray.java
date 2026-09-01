@@ -4,6 +4,7 @@ package uq.comp3506.a1.structures;
 
 
 // This is part of COMP3506 Assignment 1. Students must implement their own solutions.
+import java.util.Random;
 
 /**
  * Supplied by the COMP3506/7505 teaching team, Semester 2, 2026.
@@ -27,6 +28,8 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      * data stores the raw objects
      */
     private Object[] data;
+
+    private Random random = new Random();
 
     /**
      * Constructs an empty Dynamic Array
@@ -129,10 +132,10 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public boolean add(int ix, T element) {
-        ensureCapacity();
         if (ix < 0 || ix > this.size) {
             throw new IndexOutOfBoundsException();
         }
+        ensureCapacity();
 
         if (ix == 0) {
             this.prepend(element);
@@ -175,7 +178,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
     }
 
     private void upShift(int idx) {
-        for (int i = idx; i < this.size; i++) {
+        for (int i = idx; i < this.size - 1; i++) {
             this.data[i] = this.data[i + 1];
         }
     }
@@ -229,6 +232,38 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
         this.size = 0;
     }
 
+    private void swap(int i, int j) {
+        Object temp = this.data[i];
+        this.data[i] = this.data[j];
+        this.data[j] = temp;
+    }
+
+    private int partition(int lowIdx, int highIdx, int pivot) {
+        T pivotElem = (T) this.data[pivot];
+        int boundary = lowIdx;
+        swap(pivot, highIdx);
+
+        for (int i = lowIdx; i < highIdx; i++) {
+            if (((T) this.data[i]).compareTo(pivotElem) < 0) {
+                swap(i, boundary);
+                boundary++;
+            }
+        }
+        swap(highIdx, boundary);
+        return boundary;
+    }
+
+
+    private void quickSort(int lowIdx, int highIdx) {
+        if (lowIdx >= highIdx) {
+            return;
+        }
+        int pivot = lowIdx + random.nextInt(highIdx - lowIdx + 1);
+        int p = partition(lowIdx, highIdx, pivot);
+        quickSort(lowIdx, p - 1);
+        quickSort(p + 1, highIdx);
+    }
+
     /**
      * Sort all of the elements inside the array.
      * <p>
@@ -246,6 +281,6 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      * like: if (data[i].compareTo(data[j]) < 0) { // data[i] < data[j] }
      */
     public void sort() {
-
+        quickSort(0, this.size - 1);
     }
 }
