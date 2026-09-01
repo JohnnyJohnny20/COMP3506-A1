@@ -3,9 +3,7 @@
  */
 
 import uq.comp3506.a1.Problems;
-
-import java.sql.SQLOutput;
-import java.util.ArrayList;
+import uq.comp3506.a1.XorPair;
 
 public class TestProblems {
 
@@ -18,8 +16,8 @@ public class TestProblems {
         boolean pass = ex1 == actual;
         System.out.println("T1: Ex = " + ex1 + ", Actual = " + actual + "\nPass?: " + pass);
 
-        long[] test2 = {1, 2, 3, 4, 5, 6};
-        long ex2 = 0;
+        long[] test2 = {1, 2, 3, 4, 5, 20};
+        long ex2 = 7+9+11+13+15+17+19;
         long actual2 = Problems.sumOddNumbers(test2);
         boolean pass2 = ex2 == actual2;
         System.out.println("T1: Ex = " + ex2 + ", Actual = " + actual2 + "\nPass?: " + pass2);
@@ -27,13 +25,36 @@ public class TestProblems {
         long[] test3 = {5};
         long ex3 = 0;
         long actual3 = Problems.sumOddNumbers(test3);
-        boolean pass3 = ex2 == actual2;
+        boolean pass3 = ex3 == actual3;
         System.out.println("T1: Ex = " + ex3 + ", Actual = " + actual3 + "\nPass?: " + pass3);
 
     }
 
     public static void testToBeXOR() {
         System.out.println("Testing 'To be XOR NOT to be'");
+        long[] test1 = {1, 2, 3, 8};
+        XorPair ex1 = new XorPair(1, 2, 3);
+        XorPair actual1 = Problems.xor(test1);
+        boolean pass1 = (ex1.answer() == actual1.answer() &&
+                (ex1.x() == actual1.x() || ex1.x() == actual1.y()) &&
+                (ex1.y() == actual1.y() || ex1.y() == actual1.x()));
+        System.out.println("T1: Ex = " + ex1 + ", Actual = " + actual1 + "\nPass?: " + pass1);
+
+        long[] test2 = {30, 21, 15, 10};
+        XorPair ex2 = new XorPair(5, 10, 15);
+        XorPair actual2 = Problems.xor(test2);
+        boolean pass2 = (ex2.answer() == actual2.answer() &&
+                (ex2.x() == actual2.x() || ex2.x() == actual2.y()) &&
+                (ex2.y() == actual2.y() || ex2.y() == actual2.x()));
+        System.out.println("T1: Ex = " + ex2 + ", Actual = " + actual2 + "\nPass?: " + pass2);
+
+        long[] test3 = {100, 52, 61, 50};
+        XorPair ex3 = new XorPair(6, 50, 52);
+        XorPair actual3 = Problems.xor(test3);
+        boolean pass3 = (ex3.answer() == actual3.answer() &&
+                (ex3.x() == actual3.x() || ex3.x() == actual3.y()) &&
+                (ex3.y() == actual3.y() || ex3.y() == actual3.x()));
+        System.out.println("T1: Ex = " + ex3 + ", Actual = " + actual3 + "\nPass?: " + pass3);
     }
 
     public static void testStopStalling() {

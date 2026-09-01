@@ -5,6 +5,8 @@ package uq.comp3506.a1;
 
 // This is part of COMP3506 Assignment 1. Students must implement their own solutions.
 
+import java.util.Arrays;
+
 /**
  * The class containing all problem stubs. Refer to the spec for formal definitions and explanations.
  */
@@ -39,7 +41,6 @@ public class Problems {
             }
 
         }
-
         long firstOdd = min;
         long lastOdd = max;
         if (firstOdd % 2 == 0) {
@@ -64,7 +65,19 @@ public class Problems {
      * </ul>
      */
     public static XorPair xor(long[] numbers) {
-        return new XorPair(0, 0, 0);
+        Arrays.sort(numbers);
+        long xorRes = numbers[0] ^ numbers[1];
+        long x =  numbers[0];
+        long y = numbers[1];
+        for (int i = 1; i < numbers.length - 1; i++) {
+            long xor = numbers[i] ^ numbers[i+1];
+            if (xor < xorRes) {
+                xorRes = xor;
+                x = numbers[i];
+                y = numbers[i + 1];
+            }
+        }
+        return new XorPair(xorRes, x, y);
     }
     
     /**
