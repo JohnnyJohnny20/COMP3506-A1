@@ -4,6 +4,7 @@
 
 import uq.comp3506.a1.Interval;
 import uq.comp3506.a1.Problems;
+import uq.comp3506.a1.ProcessedPoints;
 import uq.comp3506.a1.XorPair;
 
 public class TestProblems {
@@ -104,6 +105,37 @@ public class TestProblems {
 
     public static void testRivalDealer() {
         System.out.println("Testing 'Rival Dealer Revealer'");
+
+        long[] test1 = {4, 1, 7, 8, 3};
+        ProcessedPoints res = Problems.rivalDealer(test1);
+        boolean pass1 = res.query(0, 2) == 1;
+        boolean pass2 = res.query(4, 4) == 5;
+        boolean pass3 = res.query(11, 2) == 0;
+        boolean pass4 = res.query(11, 100) == 5;
+        boolean pass5 = res.query(3, 1) == 2;
+        boolean pass6 = res.query(6, 2) == 3;
+        boolean pass7 = res.query(-10, 1) == 0;
+        boolean pass8 = res.query(1000000, 1) == 0;
+        boolean pass12 = res.query(7, 1) == 2;
+
+        long[] test2 = {5};
+        ProcessedPoints res2 = Problems.rivalDealer(test2);
+        boolean pass9 = res2.query(5, 0) == 1;
+        boolean pass10 = res2.query(5, 10) == 1;
+        boolean pass11 = res2.query(6, 0) == 0;
+        System.out.println("\nPass?: ");
+        System.out.println(pass1);
+        System.out.println(pass2);
+        System.out.println(pass3);
+        System.out.println(pass4);
+        System.out.println(pass5);
+        System.out.println(pass6);
+        System.out.println(pass7);
+        System.out.println(pass8);
+        System.out.println(pass9);
+        System.out.println(pass10);
+        System.out.println(pass11);
+        System.out.println(pass12);
     }
 
     // Try to call the given test based on the input

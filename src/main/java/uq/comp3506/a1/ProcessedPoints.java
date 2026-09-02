@@ -25,11 +25,10 @@ public class ProcessedPoints {
         int defaultEndIdx = sortedPoints.length - 1;
         int leftMostIdx = leftMost(sortedPoints, 0, defaultEndIdx, x - r);
         int rightMostIdx = rightMost(sortedPoints,0, defaultEndIdx, x + r);
-        long stallCount = 0;
-        for (int i = leftMostIdx; i < rightMostIdx + 1; i++) {
-            stallCount++;
+        if (this.sortedPoints[leftMostIdx] < x - r || this.sortedPoints[rightMostIdx] > x + r) {
+            return 0;
         }
-        return stallCount;
+        return (long) rightMostIdx- leftMostIdx + 1;
     }
 
     private int leftMost(long[] points, int startIdx, int endIdx, long key) {
