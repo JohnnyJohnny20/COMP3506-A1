@@ -83,7 +83,7 @@ public class Problems {
         return new XorPair(xorRes, x, y);
     }
 
-    // 0 is start of queue, 1 is end.
+    // 0 is start of queue, 1 is end. Utilized AI
     private record Event(long position, int type) implements Comparable<Event> {
         @Override
         public int compareTo(Event other) {
@@ -144,7 +144,7 @@ public class Problems {
      * </ul>
      */
     public static ProcessedPoints rivalDealer(long[] points) {
-        return new ProcessedPoints();
+        return new ProcessedPoints(points);
     }
 
 }
