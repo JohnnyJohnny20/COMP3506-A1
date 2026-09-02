@@ -12,6 +12,9 @@ import java.util.Arrays;
  */
 public class Problems {
 
+    private static final int START = 0;
+    private static final int END = 1;
+
     /**
      * Problem 1: Return the sum of the missing odd numbers in the range of interest.
      *
@@ -79,7 +82,18 @@ public class Problems {
         }
         return new XorPair(xorRes, x, y);
     }
-    
+
+    // 0 is start of queue, 1 is end.
+    private record Event(long position, int type) implements Comparable<Event> {
+        @Override
+        public int compareTo(Event other) {
+            if (this.position != other.position()) {
+                return Long.compare(this.position, other.position);
+            }
+            return Integer.compare(other.type, this.type);
+        }
+    }
+
     /**
      * Problem 3: Find and return the maximum number of vendors serving any single point.
      *
@@ -91,7 +105,31 @@ public class Problems {
      * </ul>
      */
     public static long stalls(Interval[] intervals) {
-        return -1;
+        Event[] events = new Event[intervals.length * 2];
+        int eventsCounter = 0;
+        for (Interval interval : intervals) {
+            Event eStart = new Event(interval.start(), START);
+            Event eEnd = new Event(interval.end() + 1, END);
+            events[eventsCounter] = eStart;
+            events[eventsCounter + 1] = eEnd;
+            eventsCounter += 2;
+        }
+
+        Arrays.sort(events);
+        long vCount = 0;
+        long max = 0;
+        for (Event event : events) {
+            if (event.type == START) {
+                vCount++;
+            } else {
+                vCount--;
+            }
+            if (vCount > max) {
+                max = vCount;
+            }
+        }
+
+        return max;
     }
 
     /**

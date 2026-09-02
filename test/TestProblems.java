@@ -2,6 +2,7 @@
  * Supplied by the COMP3506/7505 teaching team, Semester 2, 2025.
  */
 
+import uq.comp3506.a1.Interval;
 import uq.comp3506.a1.Problems;
 import uq.comp3506.a1.XorPair;
 
@@ -20,13 +21,13 @@ public class TestProblems {
         long ex2 = 7+9+11+13+15+17+19;
         long actual2 = Problems.sumOddNumbers(test2);
         boolean pass2 = ex2 == actual2;
-        System.out.println("T1: Ex = " + ex2 + ", Actual = " + actual2 + "\nPass?: " + pass2);
+        System.out.println("T2: Ex = " + ex2 + ", Actual = " + actual2 + "\nPass?: " + pass2);
 
         long[] test3 = {5};
         long ex3 = 0;
         long actual3 = Problems.sumOddNumbers(test3);
         boolean pass3 = ex3 == actual3;
-        System.out.println("T1: Ex = " + ex3 + ", Actual = " + actual3 + "\nPass?: " + pass3);
+        System.out.println("T3: Ex = " + ex3 + ", Actual = " + actual3 + "\nPass?: " + pass3);
 
     }
 
@@ -46,7 +47,7 @@ public class TestProblems {
         boolean pass2 = (ex2.answer() == actual2.answer() &&
                 (ex2.x() == actual2.x() || ex2.x() == actual2.y()) &&
                 (ex2.y() == actual2.y() || ex2.y() == actual2.x()));
-        System.out.println("T1: Ex = " + ex2 + ", Actual = " + actual2 + "\nPass?: " + pass2);
+        System.out.println("T2: Ex = " + ex2 + ", Actual = " + actual2 + "\nPass?: " + pass2);
 
         long[] test3 = {100, 52, 61, 50};
         XorPair ex3 = new XorPair(6, 50, 52);
@@ -54,11 +55,51 @@ public class TestProblems {
         boolean pass3 = (ex3.answer() == actual3.answer() &&
                 (ex3.x() == actual3.x() || ex3.x() == actual3.y()) &&
                 (ex3.y() == actual3.y() || ex3.y() == actual3.x()));
-        System.out.println("T1: Ex = " + ex3 + ", Actual = " + actual3 + "\nPass?: " + pass3);
+        System.out.println("T3: Ex = " + ex3 + ", Actual = " + actual3 + "\nPass?: " + pass3);
     }
 
     public static void testStopStalling() {
         System.out.println("Testing 'Stop Stalling'");
+        Interval[] test1 = {
+                new Interval(1, 3),
+                new Interval(2, 5),
+                new Interval(6, 7),
+                new Interval(5, 12),
+                new Interval(1, 5),
+                new Interval(0, 3)
+        };
+        long ex1 = 4;
+        long actual1 = Problems.stalls(test1);
+        boolean pass1 = (ex1 == actual1);
+        System.out.println("T1: Ex = " + ex1 + ", Actual = " + actual1 + "\nPass?: " + pass1);
+
+        System.out.println("Testing 'Stop Stalling'");
+        Interval[] test2 = {
+                new Interval(1, 2),
+                new Interval(3, 4),
+                new Interval(5, 6),
+                new Interval(7, 8),
+                new Interval(9, 10),
+                new Interval(11, 12)
+        };
+        long ex2 = 0;
+        long actual2 = Problems.stalls(test1);
+        boolean pass2 = (ex1 == actual1);
+        System.out.println("T1: Ex = " + ex2 + ", Actual = " + actual2 + "\nPass?: " + pass2);
+
+        System.out.println("Testing 'Stop Stalling'");
+        Interval[] test3 = {
+                new Interval(1, 2),
+                new Interval(1, 2),
+                new Interval(1, 3),
+                new Interval(1, 12),
+                new Interval(1, 5),
+                new Interval(1, 3)
+        };
+        long ex3 = 6;
+        long actual3 = Problems.stalls(test3);
+        boolean pass3 = (ex3 == actual3);
+        System.out.println("T1: Ex = " + ex3 + ", Actual = " + actual3 + "\nPass?: " + pass3);
     }
 
     public static void testRivalDealer() {
