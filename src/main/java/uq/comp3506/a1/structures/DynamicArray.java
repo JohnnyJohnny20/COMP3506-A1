@@ -50,7 +50,9 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
 
     // See ListInterface
     @Override
-    public boolean isEmpty() { return this.size() == 0; }
+    public boolean isEmpty() {
+        return this.size() == 0;
+    }
 
     /**
      * Has the size reached the current capacity?
@@ -75,7 +77,9 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
         if (this.capacity == this.size) {
             this.capacity *= 2;
             Object[] newArray = new Object[this.capacity];
-            if (this.size >= 0) System.arraycopy(this.data, 0, newArray, 0, this.size);
+            if (this.size >= 0) {
+                System.arraycopy(this.data, 0, newArray, 0, this.size);
+            }
             this.data = newArray;
         }
     }
@@ -87,7 +91,9 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
         }
         if (this.capacity != this.data.length) {
             Object[] newArray = new Object[this.capacity];
-            if (this.size >= 0) System.arraycopy(this.data, 0, newArray, 0, this.size);
+            if (this.size >= 0) {
+                System.arraycopy(this.data, 0, newArray, 0, this.size);
+            }
             this.data = newArray;
         }
     }
@@ -106,12 +112,19 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
         return true;
     }
 
-
+    /* Shifts array down by 1 element after given idx*/
     private void downShift(int idx) {
         downShift(idx, 1);
     }
 
     /* For Genome Editor */
+
+    /**
+     * Shifts the array at a given index by a given amount.
+     *
+     * @param idx - the index to begin the shift (becomes a free slot/s)
+     * @param shiftBy - the amount to shift down by
+     */
     public void downShift(int idx, int shiftBy) {
         System.arraycopy(this.data, idx, this.data, idx + shiftBy, this.size - idx);
     }
@@ -165,6 +178,14 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
     }
 
     /* For GenomeEditor */
+
+    /**
+     * A bulk shifter for adding multiple elements
+     *
+     * @param ix - the index to add into
+     * @param elements - the elements to add
+     * @return true to match add() return's behaviour
+     */
     public boolean addBulk(int ix, T[] elements) {
         if (ix < 0 || ix > this.size) {
             throw new IndexOutOfBoundsException();
@@ -209,6 +230,13 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
     }
 
     /* For Genome Editor */
+
+    /**
+     * Shift elements in an array up by a given amount at a given index
+     *
+     * @param idx - the index of the first element to shift
+     * @param shiftBy - the amount to shift by
+     */
     public void upShift(int idx, int shiftBy) {
         System.arraycopy(this.data, idx + shiftBy, this.data, idx, this.size - idx - shiftBy);
     }
@@ -223,13 +251,22 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
         if (notInExistingBounds(ix)) {
             throw new IndexOutOfBoundsException();
         }
+        this.size--;
         T removedElem = this.get(ix);
         this.data[ix] = null;
         upShift(ix);
-        this.size--;
         return removedElem;
     }
 
+    /* For Genome Editor */
+
+    /**
+     * A bulk remover of a given count of elements at a given index
+     *
+     * @param ix - the index of the first element to remove
+     * @param count - the amount of elements to the right to remove
+     * @return - An array of Objects representing the elements removed
+     */
     public Object[] removeBulk(int ix, int count) {
         if (count == 0) {
             if (ix < 0 || ix > this.size) {

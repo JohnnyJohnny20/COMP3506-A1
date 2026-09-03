@@ -144,7 +144,9 @@ public final class GenomeEditor {
         if (this.chunksCapacity == this.chunksCount) {
             this.chunksCapacity *= 2;
             DynamicArray[] newArray = new DynamicArray[this.chunksCapacity];
-            if (this.chunksCount >= 0) System.arraycopy(this.seq, 0, newArray, 0, this.chunksCount);
+            if (this.chunksCount >= 0) {
+                System.arraycopy(this.seq, 0, newArray, 0, this.chunksCount);
+            }
             this.seq = newArray;
         }
     }
@@ -181,7 +183,7 @@ public final class GenomeEditor {
         splitChunk(chunkIdx);
     }
 
-    private boolean verifyNeighbour (int chunkIdx, int neighbourChunkIdx, int threshold) {
+    private boolean verifyNeighbour(int chunkIdx, int neighbourChunkIdx, int threshold) {
         if (this.seq[chunkIdx].size() + this.seq[neighbourChunkIdx].size() < threshold) {
             return true;
         }
@@ -193,17 +195,17 @@ public final class GenomeEditor {
             return -1;
         }
         if (chunkIdx == 0) {
-            if (verifyNeighbour(chunkIdx,chunkIdx + 1, threshold)) {
+            if (verifyNeighbour(chunkIdx, chunkIdx + 1, threshold)) {
                 return RIGHT;
-            };
+            }
         } else if (chunkIdx == chunksCount - 1) {
             if (verifyNeighbour(chunkIdx, chunkIdx - 1, threshold)) {
                 return LEFT;
             }
         } else {
-            if (verifyNeighbour(chunkIdx, chunkIdx + 1, threshold)){
+            if (verifyNeighbour(chunkIdx, chunkIdx + 1, threshold)) {
                 return RIGHT;
-            };
+            }
             if (verifyNeighbour(chunkIdx, chunkIdx - 1, threshold)) {
                 return LEFT;
             }
@@ -213,7 +215,7 @@ public final class GenomeEditor {
 
     private void mergeChunk(int chunkIdx) {
         int chunkSize = seq[chunkIdx].size();
-        int threshold = (int) Math.sqrt(seqLength)/2;
+        int threshold = (int) Math.sqrt(seqLength) / 2;
         int splitThreshold = (int) Math.sqrt(seqLength) * 2;
         if (chunkSize > threshold) {
             return;

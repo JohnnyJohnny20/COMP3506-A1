@@ -53,8 +53,8 @@ public class Problems {
             lastOdd--;
         }
 
-        long n = ((lastOdd-firstOdd)/2 + 1);
-        return n * (firstOdd + lastOdd)/2 - sumOfExistingOdds;
+        long n = ((lastOdd - firstOdd) / 2 + 1);
+        return n * (firstOdd + lastOdd) / 2 - sumOfExistingOdds;
     }
 
     /**
@@ -73,7 +73,7 @@ public class Problems {
         long x =  numbers[0];
         long y = numbers[1];
         for (int i = 1; i < numbers.length - 1; i++) {
-            long xor = numbers[i] ^ numbers[i+1];
+            long xor = numbers[i] ^ numbers[i + 1];
             if (xor < xorRes) {
                 xorRes = xor;
                 x = numbers[i];
@@ -108,24 +108,24 @@ public class Problems {
         Event[] events = new Event[intervals.length * 2];
         int eventsCounter = 0;
         for (Interval interval : intervals) {
-            Event eStart = new Event(interval.start(), START);
-            Event eEnd = new Event(interval.end() + 1, END);
-            events[eventsCounter] = eStart;
-            events[eventsCounter + 1] = eEnd;
+            Event evStart = new Event(interval.start(), START);
+            Event evEnd = new Event(interval.end() + 1, END);
+            events[eventsCounter] = evStart;
+            events[eventsCounter + 1] = evEnd;
             eventsCounter += 2;
         }
 
         Arrays.sort(events);
-        long vCount = 0;
+        long evCount = 0;
         long max = 0;
         for (Event event : events) {
             if (event.type == START) {
-                vCount++;
+                evCount++;
             } else {
-                vCount--;
+                evCount--;
             }
-            if (vCount > max) {
-                max = vCount;
+            if (evCount > max) {
+                max = evCount;
             }
         }
 

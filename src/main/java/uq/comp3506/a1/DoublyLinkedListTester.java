@@ -2,6 +2,7 @@
 
 package uq.comp3506.a1;
 
+import java.util.IdentityHashMap;
 import java.util.Random;
 
 import uq.comp3506.a1.structures.ListInterface;
@@ -297,6 +298,23 @@ public class DoublyLinkedListTester<T> {
         return false;
     }
 
+    private boolean hasOutOfBoundsBug(ListInterface<T> testList, int idx, int action) {
+        try {
+            if (action == 1) {
+                testList.get(idx);
+            } else if (action == 2) {
+                testList.set(idx, oracle.nextT());
+            } else {
+                testList.remove(idx);
+            }
+            return true; // Should have thrown IOOB
+        } catch (IndexOutOfBoundsException e) {
+            return false; // Correct behaviour
+        } catch (Exception e) {
+            return true; // Should not throw anything other than IOOB
+        }
+    }
+
     /**
      * Checks whether {@link ListInterface#append(Object)}, {@link ListInterface#get(int)},
      * {@link ListInterface#set(int, Object)}, {@link ListInterface#remove(int)},
@@ -307,33 +325,14 @@ public class DoublyLinkedListTester<T> {
      * @return {@code true} if a bug is detected; {@code false} otherwise
      */
     public boolean hasBugsAppendGetSetRemove(ListInterface<T> testList) {
-        try {
-            testList.remove(-1);
-            return true;
-        } catch (IndexOutOfBoundsException e) {
-            if (!testList.isEmpty() ||  testList.size() != 0) {
-                return true;
-            }
-        } catch (Exception e) {
+        if (!testList.isEmpty() ||  testList.size() != 0) {
             return true;
         }
-        try {
-            testList.set(-1, oracle.nextT());
-            return true;
-        } catch (IndexOutOfBoundsException e) {
-            // correct
-        } catch (Exception e) {
+        if (hasOutOfBoundsBug(testList, -1, 1)
+                || hasOutOfBoundsBug(testList, -1, 2)
+                || hasOutOfBoundsBug(testList, -1, 3)) {
             return true;
         }
-        try {
-            testList.get(-1);
-            return true;
-        } catch (IndexOutOfBoundsException e) {
-            // correct
-        } catch (Exception e) {
-            return true;
-        }
-
         LinkedList<T> reference = new LinkedList<>();
         for (int i = 0; i < 2500; i++) {
             T element = oracle.nextT();
