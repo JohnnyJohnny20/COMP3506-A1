@@ -6,8 +6,6 @@ package uq.comp3506.a1.structures;
 // This is part of COMP3506 Assignment 1. Students must implement their own solutions.
 
 
-import java.util.Arrays;
-
 /**
  * Maintains a mutable genome sequence containing only the bases {@code A},
  * {@code T}, {@code C}, and {@code G}.
@@ -32,6 +30,8 @@ public final class GenomeEditor {
     private int chunksCapacity = 16;
     private static final int CHUNK_IDX = 0;
     private static final int OFFSET = 1;
+    private static final int LEFT = 0;
+    private static final int RIGHT = 1;
 
     /**
      * Creates an empty genome editor.
@@ -99,6 +99,9 @@ public final class GenomeEditor {
         if (left > right || left < 0 || right > this.seqLength) {
             throw new IndexOutOfBoundsException();
         }
+        if (left == right) {
+            return "";
+        }
         StringBuilder sub = new StringBuilder();
         int total = right - left;
         int[] startIdx = convertIdx(left);
@@ -150,9 +153,14 @@ public final class GenomeEditor {
         System.arraycopy(this.seq, idx, this.seq, idx + 1, this.chunksCount - idx);
     }
 
-    private void splitChunk (int chunkIdx) {
+    private void upShiftChunks(int idx) {
+        System.arraycopy(this.seq, idx + 1, this.seq, idx, this.chunksCount - idx - 1);
+    }
+
+
+    private void splitChunk(int chunkIdx) {
         int chunkSize = seq[chunkIdx].size();
-        if (chunkSize <= Math.sqrt(seqLength)) {
+        if (chunkSize <= Math.sqrt(seqLength) * 2) {
             return;
         }
 
@@ -172,6 +180,66 @@ public final class GenomeEditor {
         splitChunk(newIdx);
         splitChunk(chunkIdx);
     }
+
+    private boolean verifyNeighbour (int chunkIdx, int neighbourChunkIdx, int threshold) {
+        if (this.seq[chunkIdx].size() + this.seq[neighbourChunkIdx].size() < threshold) {
+            return true;
+        }
+        return false;
+    }
+
+    private int findMergeNeighbour(int chunkIdx, int threshold) {
+        if (chunksCount <= 1) {
+            return -1;
+        }
+        if (chunkIdx == 0) {
+            if (verifyNeighbour(chunkIdx,chunkIdx + 1, threshold)) {
+                return RIGHT;
+            };
+        } else if (chunkIdx == chunksCount - 1) {
+            if (verifyNeighbour(chunkIdx, chunkIdx - 1, threshold)) {
+                return LEFT;
+            }
+        } else {
+            if (verifyNeighbour(chunkIdx, chunkIdx + 1, threshold)){
+                return RIGHT;
+            };
+            if (verifyNeighbour(chunkIdx, chunkIdx - 1, threshold)) {
+                return LEFT;
+            }
+        }
+        return -1;
+    }
+
+    private void mergeChunk(int chunkIdx) {
+        int chunkSize = seq[chunkIdx].size();
+        int threshold = (int) Math.sqrt(seqLength)/2;
+        int splitThreshold = (int) Math.sqrt(seqLength) * 2;
+        if (chunkSize > threshold) {
+            return;
+        }
+        int neighbour = findMergeNeighbour(chunkIdx, splitThreshold);
+        if (neighbour != -1) {
+            Object[] moved = seq[chunkIdx].removeBulk(0, seq[chunkIdx].size());
+            Character[] movedChars = new Character[moved.length];
+            for (int i = 0; i < moved.length; i++) {
+                movedChars[i] = (Character) moved[i];
+            }
+            int mergedIdx = -1;
+            if (neighbour == LEFT) {
+                mergedIdx = chunkIdx - 1;
+                this.seq[mergedIdx].addBulk(seq[mergedIdx].size(), movedChars);
+            } else {
+                mergedIdx = chunkIdx + 1;
+                this.seq[mergedIdx].addBulk(0, movedChars);
+                mergedIdx = chunkIdx; // considering upshift
+            }
+            upShiftChunks(chunkIdx);
+            chunksCount--;
+            mergeChunk(mergedIdx);
+        }
+    }
+
     /**
      * Inserts a genome fragment immediately before the specified position.
      * Position {@code 0} inserts at the beginning, while {@code length()}
@@ -200,6 +268,7 @@ public final class GenomeEditor {
             seq[0].addBulk(0, frCharArray);
             seqLength += fragment.length();
             chunksCount++;
+            splitChunk(0);
             return;
         }
         int[] idx = convertAddIdx(position);
@@ -230,6 +299,7 @@ public final class GenomeEditor {
         }
         int[] idx = convertIdx(position);
         int targetChunk = idx[CHUNK_IDX];
+        int startChunk = idx[CHUNK_IDX];
         int offset = idx[OFFSET];
         seqLength -= length;
         StringBuilder str = new StringBuilder();
@@ -243,6 +313,10 @@ public final class GenomeEditor {
             length -= removeable;
             targetChunk++;
             offset = 0;
+        }
+        int endChunk = targetChunk - 1;
+        for (int i = endChunk; i >= startChunk; i--) {
+            mergeChunk(i);
         }
         return str.toString();
     }

@@ -231,6 +231,12 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
     }
 
     public Object[] removeBulk(int ix, int count) {
+        if (count == 0) {
+            if (ix < 0 || ix > this.size) {
+                throw new IndexOutOfBoundsException();
+            }
+            return new Object[0];
+        }
         if (notInExistingBounds(ix) || notInExistingBounds(ix + count - 1)) {
             throw new IndexOutOfBoundsException();
         }
