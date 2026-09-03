@@ -318,7 +318,9 @@ public final class GenomeEditor {
         }
         int endChunk = targetChunk - 1;
         for (int i = endChunk; i >= startChunk; i--) {
-            mergeChunk(i);
+            if (i < chunksCount) {
+                mergeChunk(i);
+            }
         }
         return str.toString();
     }

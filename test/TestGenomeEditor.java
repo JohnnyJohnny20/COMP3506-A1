@@ -21,7 +21,7 @@ public class TestGenomeEditor {
         System.out.println(genomeEditor);
 
 
-        GenomeEditor editor = new GenomeEditor();
+        GenomeEditor edi = new GenomeEditor();
 // Insert a large string to trigger multi-level splitting
         StringBuilder largeInput = new StringBuilder();
         for (int i = 0; i < 5000; i++) {
@@ -29,17 +29,36 @@ public class TestGenomeEditor {
         }
 
         System.out.println("Starting insert...");
-        editor.insert(0, largeInput.toString()); // Your local code will hang right here!
+        edi.insert(0, largeInput.toString()); // Your local code will hang right here!
         System.out.println("Finished insert!");
 
         GenomeEditor editor2 = new GenomeEditor();
-        editor.insert(0, "ACGT");
+        edi.insert(0, "ACGT");
 // Edge case 1: Empty substring at end boundary
-        System.out.println("Empty substring: '" + editor.substring(4, 4) + "'");
+        System.out.println("Empty substring: '" + edi.substring(4, 4) + "'");
 
 // Edge case 2: Delete entire contents
-        editor.delete(0, 4);
-        System.out.println("Length after full delete: " + editor.length());
+        edi.delete(0, 4);
+        System.out.println("Length after full delete: " + edi.length());
+
+
+        GenomeEditor editor = new GenomeEditor();
+
+        // Build chunks
+        for (int i = 0; i < 50; i++) {
+            editor.insert(0, "ACGTACGTACGT");
+        }
+
+        // Drain the editor in chunks to force sequential merges
+        while (editor.length() > 10) {
+            editor.delete(0, 10);
+        }
+
+        // Attempt to mutate remaining characters
+        for (int i = 0; i < editor.length(); i++) {
+            editor.mutate(i, 'A');
+        }
+
 
         System.out.println("Success!");
     }
