@@ -24,11 +24,20 @@ package uq.comp3506.a1.structures;
  */
 public final class GenomeEditor {
 
+    private DynamicArray<Character>[] seq;
+    private int chunksCount; // Active chunks
+    private int seqLength;
+    private static final int CHUNK_IDX = 0;
+    private static final int OFFSET = 1;
+
     /**
      * Creates an empty genome editor.
      */
     public GenomeEditor() {
         // Do whatever you need to initialise the editor
+        this.seq = new DynamicArray[16];
+        this.chunksCount = 0;
+        this.seqLength = 0;
     }
 
     /**
@@ -37,7 +46,24 @@ public final class GenomeEditor {
      * @return the number of bases in the genome
      */
     public int length() {
-        return -1;
+        return this.seqLength;
+    }
+
+    private int[] convertIdx(int index) {
+        if (index < 0 || index >= this.seqLength) {
+            throw new IndexOutOfBoundsException();
+        }
+        int targetChunk = 0;
+        for (int i = 0; i < this.chunksCount; i++) {
+            if (index >= seq[i].size()) {
+                targetChunk++;
+                index -= seq[i].size();
+                continue;
+            } else {
+                break;
+            }
+        }
+        return new int[]{targetChunk, index};
     }
 
     /**
@@ -49,7 +75,8 @@ public final class GenomeEditor {
      * @throws IndexOutOfBoundsException if {@code index} is outside the genome
      */
     public char charAt(int index) {
-        return '?';
+        int[] idx = convertIdx(index);
+        return seq[idx[CHUNK_IDX]].get(idx[OFFSET]);
     }
 
     /**
@@ -66,7 +93,45 @@ public final class GenomeEditor {
      *         {@code 0 <= left <= right <= length()}
      */
     public String substring(int left, int right) {
-        return "";
+        if (left > right || left < 0 || right > this.seqLength) {
+            throw new IndexOutOfBoundsException();
+        }
+        StringBuilder sub = new StringBuilder();
+        int total = right - left;
+        int[] startIdx = convertIdx(left);
+        int chunk = startIdx[CHUNK_IDX];
+        int offset = startIdx[OFFSET];
+        while (total != 0) {
+            sub.append(seq[chunk].get(offset));
+            total--;
+            offset++;
+            if (offset >= seq[chunk].size()) {
+                offset = 0;
+                chunk++;
+            }
+        }
+        return sub.toString();
+    }
+
+    private int[] convertAddIdx(int index) {
+        if (index < 0 || index > this.seqLength) {
+            throw new IndexOutOfBoundsException();
+        }
+        int targetChunk = 0;
+        for (int i = 0; i < chunksCount; i++) {
+            if (index >= seq[i].size()) {
+                targetChunk++;
+                index -= seq[i].size();
+                continue;
+            } else {
+                break;
+            }
+        }
+        if (targetChunk == chunksCount) {
+            targetChunk--;
+            index = seq[targetChunk].size();
+        }
+        return new int[]{targetChunk, index};
     }
 
     /**
@@ -83,7 +148,25 @@ public final class GenomeEditor {
      * @throws IndexOutOfBoundsException if {@code position} is invalid
      */
     public void insert(int position, String fragment) {
+        if (position < 0 || position > seqLength) {
+            throw new IndexOutOfBoundsException();
+        }
 
+        Character[] frCharArray = new Character[fragment.length()];
+        for (int i = 0; i < fragment.length(); i++) {
+            frCharArray[i] = fragment.charAt(i);
+        }
+        if (chunksCount == 0) {
+            // CREATE CHUNKS
+            seq[0] = new DynamicArray<>();
+            seq[0].addBulk(0, frCharArray);
+            seqLength += fragment.length();
+            chunksCount++;
+            return;
+        }
+        int[] idx = convertAddIdx(position);
+        seq[idx[CHUNK_IDX]].addBulk(idx[OFFSET], frCharArray);
+        seqLength += fragment.length();
     }
 
     /**
@@ -117,7 +200,14 @@ public final class GenomeEditor {
      * @throws IllegalArgumentException if {@code newBase} is invalid
      */
     public void mutate(int position, char newBase) {
+        if (newBase != 'A' && newBase != 'T' && newBase != 'G' && newBase != 'C') {
+            throw new IllegalArgumentException();
+        }
+        if (position < 0 || position > seqLength) {
+            throw new IndexOutOfBoundsException();
+        }
 
+        int[] idx = convertIdx(position);
     }
 
     /**
@@ -127,6 +217,12 @@ public final class GenomeEditor {
      */
     @Override
     public String toString() {
-        return "";
+        StringBuilder str = new StringBuilder();
+        for (int i = 0; i < chunksCount; i++) {
+            for (int j = 0; j < seq[i].size(); j++) {
+                str.append(seq[i].get(j));
+            }
+        }
+        return str.toString();
     }
 }

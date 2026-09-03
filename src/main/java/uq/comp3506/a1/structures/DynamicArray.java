@@ -80,6 +80,18 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
         }
     }
 
+    /* For Genome Editor */
+    private void ensureCapacity(int incoming) {
+        while (this.capacity < this.size + incoming) {
+            this.capacity *= 2;
+        }
+        if (this.capacity != this.data.length) {
+            Object[] newArray = new Object[this.capacity];
+            if (this.size >= 0) System.arraycopy(this.data, 0, newArray, 0, this.size);
+            this.data = newArray;
+        }
+    }
+
     /**
      * Add an element to the end of the array. Returns true if successful,
      * false otherwise. [See the note in the ListInterface class about when
@@ -96,7 +108,12 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
 
 
     private void downShift(int idx) {
-        System.arraycopy(this.data, idx, this.data, idx + 1, this.size - idx);
+        downShift(idx, 1);
+    }
+
+    /* For Genome Editor */
+    public void downShift(int idx, int shiftBy) {
+        System.arraycopy(this.data, idx, this.data, idx + shiftBy, this.size - idx);
     }
 
     /**
@@ -147,6 +164,18 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
         return true;
     }
 
+    /* For GenomeEditor */
+    public boolean addBulk(int ix, T[] elements) {
+        if (ix < 0 || ix > this.size) {
+            throw new IndexOutOfBoundsException();
+        }
+        ensureCapacity(elements.length);
+        downShift(ix, elements.length);
+        System.arraycopy(elements, 0, this.data, ix, elements.length);
+        this.size += elements.length;
+        return true;
+    }
+
     /**
      * Return the element at index ix.
      * If ix is out of bounds, throw an IndexOutOfBoundsException.
@@ -176,7 +205,12 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
     }
 
     private void upShift(int idx) {
-        System.arraycopy(this.data, idx + 1, this.data, idx, this.size - idx - 1);
+        upShift(idx, 1);
+    }
+
+    /* For Genome Editor */
+    public void upShift(int idx, int shiftBy) {
+        System.arraycopy(this.data, idx + shiftBy, this.data, idx, this.size - idx - shiftBy);
     }
 
     /**
