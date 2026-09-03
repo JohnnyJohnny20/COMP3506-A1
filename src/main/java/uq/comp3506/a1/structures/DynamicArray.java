@@ -230,6 +230,20 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
         return removedElem;
     }
 
+    public Object[] removeBulk(int ix, int count) {
+        if (notInExistingBounds(ix) || notInExistingBounds(ix + count - 1)) {
+            throw new IndexOutOfBoundsException();
+        }
+        Object[] removedElems = new Object[count];
+        for (int i = 0; i < count; i++) {
+            removedElems[i] = this.data[ix + i];
+            this.data[ix + i] = null;
+        }
+        upShift(ix, count);
+        this.size -= count;
+        return removedElems;
+    }
+
     /**
      * Find and remove the first value in the array that equals t (the one
      * with the smallest index).

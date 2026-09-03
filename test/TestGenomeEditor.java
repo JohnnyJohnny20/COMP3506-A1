@@ -16,6 +16,7 @@ public class TestGenomeEditor {
         System.out.println(genomeEditor);
         System.out.println(genomeEditor.charAt(0));
         System.out.println(genomeEditor.substring(2,5));
+        System.out.println(genomeEditor.delete(13, 5));
         System.out.println("Success!");
     }
 

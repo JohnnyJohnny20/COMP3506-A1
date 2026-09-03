@@ -6,6 +6,8 @@ package uq.comp3506.a1.structures;
 // This is part of COMP3506 Assignment 1. Students must implement their own solutions.
 
 
+import java.util.Arrays;
+
 /**
  * Maintains a mutable genome sequence containing only the bases {@code A},
  * {@code T}, {@code C}, and {@code G}.
@@ -27,6 +29,7 @@ public final class GenomeEditor {
     private DynamicArray<Character>[] seq;
     private int chunksCount; // Active chunks
     private int seqLength;
+    private int chunksCapacity = 16;
     private static final int CHUNK_IDX = 0;
     private static final int OFFSET = 1;
 
@@ -35,7 +38,7 @@ public final class GenomeEditor {
      */
     public GenomeEditor() {
         // Do whatever you need to initialise the editor
-        this.seq = new DynamicArray[16];
+        this.seq = new DynamicArray[chunksCapacity];
         this.chunksCount = 0;
         this.seqLength = 0;
     }
@@ -134,6 +137,41 @@ public final class GenomeEditor {
         return new int[]{targetChunk, index};
     }
 
+    private void ensureChunkCapacity() {
+        if (this.chunksCapacity == this.chunksCount) {
+            this.chunksCapacity *= 2;
+            DynamicArray[] newArray = new DynamicArray[this.chunksCapacity];
+            if (this.chunksCount >= 0) System.arraycopy(this.seq, 0, newArray, 0, this.chunksCount);
+            this.seq = newArray;
+        }
+    }
+
+    private void downShiftChunks(int idx) {
+        System.arraycopy(this.seq, idx, this.seq, idx + 1, this.chunksCount - idx);
+    }
+
+    private void splitChunk (int chunkIdx) {
+        int chunkSize = seq[chunkIdx].size();
+        if (chunkSize <= Math.sqrt(seqLength)) {
+            return;
+        }
+
+        int mid = chunkSize / 2;
+        DynamicArray<Character> newChunk = new DynamicArray<>();
+        Object[] moved = seq[chunkIdx].removeBulk(mid, seq[chunkIdx].size() - mid);
+        Character[] movedChars = new Character[moved.length];
+        for (int i = 0; i < moved.length; i++) {
+            movedChars[i] = (Character) moved[i];
+        }
+        newChunk.addBulk(0, movedChars);
+        ensureChunkCapacity();
+        int newIdx = chunkIdx + 1;
+        downShiftChunks(newIdx);
+        this.seq[newIdx] = newChunk;
+        chunksCount++;
+        splitChunk(newIdx);
+        splitChunk(chunkIdx);
+    }
     /**
      * Inserts a genome fragment immediately before the specified position.
      * Position {@code 0} inserts at the beginning, while {@code length()}
@@ -167,6 +205,7 @@ public final class GenomeEditor {
         int[] idx = convertAddIdx(position);
         seq[idx[CHUNK_IDX]].addBulk(idx[OFFSET], frCharArray);
         seqLength += fragment.length();
+        splitChunk(idx[CHUNK_IDX]);
     }
 
     /**
@@ -183,7 +222,29 @@ public final class GenomeEditor {
      *         current genome length
      */
     public String delete(int position, int length) {
-        return "";
+        if (length < 0 || position + length > seqLength || position < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+        if (length == 0) {
+            return "";
+        }
+        int[] idx = convertIdx(position);
+        int targetChunk = idx[CHUNK_IDX];
+        int offset = idx[OFFSET];
+        seqLength -= length;
+        StringBuilder str = new StringBuilder();
+        while (length != 0) {
+            int available = seq[targetChunk].size() - offset;
+            int removeable = Math.min(length, available);
+            Object[] removed = seq[targetChunk].removeBulk(offset, removeable);
+            for (Object base : removed) {
+                str.append(base);
+            }
+            length -= removeable;
+            targetChunk++;
+            offset = 0;
+        }
+        return str.toString();
     }
 
     /**
@@ -203,11 +264,8 @@ public final class GenomeEditor {
         if (newBase != 'A' && newBase != 'T' && newBase != 'G' && newBase != 'C') {
             throw new IllegalArgumentException();
         }
-        if (position < 0 || position > seqLength) {
-            throw new IndexOutOfBoundsException();
-        }
-
         int[] idx = convertIdx(position);
+        seq[idx[CHUNK_IDX]].set(idx[OFFSET], newBase);
     }
 
     /**
